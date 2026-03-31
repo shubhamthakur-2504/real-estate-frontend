@@ -1,18 +1,98 @@
-# React + Vite
+# Real Estate Management System - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite frontend for the Real Estate Management System.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 18
+- Vite
+- React Router v6
+- Zustand (State Management)
+- React Hook Form + Zod (Form Validation)
+- Tailwind CSS + shadcn/ui
+- Sonner (Notifications)
+- Leaflet (Mapping)
+- Axios (API Client)
 
-## React Compiler
+## Project Structure
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+```
+src/
+├── components/          # Reusable React components
+│   ├── common/         # Common components (Navbar, Footer, etc)
+│   ├── auth/           # Authentication components
+│   ├── properties/     # Property listing components
+│   ├── search/         # Search & filter components
+│   ├── dashboard/      # Dashboard components
+│   ├── leads/          # Lead management components
+│   └── notifications/  # Notification components
+├── pages/              # Page components
+├── hooks/              # Custom React hooks
+├── services/           # API service calls
+├── utils/              # Utility functions
+├── styles/             # Global styles
+└── App.jsx            # Main App component
+```
 
-Note: This will impact Vite dev & build performances.
+## Setup
 
-## Expanding the ESLint configuration
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+2. **Create .env file**
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Update environment variables**
+   ```env
+   VITE_API_BASE_URL=http://localhost:5000/api
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+## Available Scripts
+
+- `npm run dev` - Start development server (http://localhost:5173)
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Key Features
+
+- User Authentication (Login/Register)
+- Property Listing & Management
+- Advanced Search & Filtering
+- Interactive Map View (Leaflet)
+- Lead Management
+- User Dashboard
+- Admin Panel
+- Email Notifications
+
+## API Integration
+
+All API calls are made through `src/services/api.js`. The base URL is configured via `VITE_API_BASE_URL` environment variable.
+
+## Contributing
+
+1. Create feature branches
+2. Follow component naming conventions
+3. Use shadcn/ui for UI components
+4. Keep components focused and reusable
+
+## Notes
+
+- All components use Tailwind CSS for styling
+- Form validation uses Zod schemas
+- State management is handled by Zustand
+- No real-time features (no Socket.io)
