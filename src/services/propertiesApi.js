@@ -89,6 +89,15 @@ export const propertiesApi = {
   },
 
   /**
+   * Remove image from property
+   * @param {string} propertyId
+   * @param {string} publicId - Cloudinary public ID
+   */
+  removeImage: (propertyId, publicId) => {
+    return api.delete(`/properties/${propertyId}/images/remove`, { data: { publicId } }).then((res) => res.data.data || res.data)
+  },
+
+  /**
    * Get properties owned by current user
    * @returns {Promise} - { properties }
    */
