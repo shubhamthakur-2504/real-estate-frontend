@@ -148,7 +148,7 @@ export function BuyerPropertyDetailModal({ property, isOpen, onClose, onInquiryS
         onClick={onClose}
       />
       {/* Modal */}
-      <div className="relative w-full md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 rounded-t-2xl md:rounded-lg shadow-2xl">
+      <div className="relative w-full md:w-2/3 lg:w-1/2 max-h-[90vh] overflow-y-auto scrollbar-hide bg-white dark:bg-gray-900 rounded-t-2xl md:rounded-lg shadow-2xl">
         {/* Close Button */}
         <button
           onClick={onClose}
