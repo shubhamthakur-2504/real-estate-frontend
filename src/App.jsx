@@ -5,6 +5,7 @@ import { Layout } from '@/components/common/Layout'
 import { Dashboard } from '@/pages/Dashboard'
 import { Properties } from '@/pages/Properties'
 import { BuyerProperties } from '@/pages/BuyerProperties'
+import { BuyerInquiries } from '@/pages/BuyerInquiries'
 import { Leads } from '@/pages/Leads'
 import { UploadPage } from '@/pages/Upload'
 import { Settings } from '@/pages/Settings'
@@ -56,6 +57,10 @@ function App() {
             <Route
               path="/buyer/properties"
               element={<ProtectedRoute element={<BuyerProperties />} allowedRoles={['buyer']} />}
+            />
+            <Route
+              path="/buyer/inquiries"
+              element={<ProtectedRoute element={<BuyerInquiries />} allowedRoles={['buyer']} />}
             />
             <Route
               path="/leads"
