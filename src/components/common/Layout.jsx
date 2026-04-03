@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Menu, X, LogOut, LayoutDashboard, Home, Users, Settings, Heart, CheckCircle } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ThemeSwitcher } from './ThemeSwitcher'
+import { NotificationBell } from '@/components/notifications/NotificationBell'
 import { useAuthStore } from '@/utils/authStore'
 import { Button } from '@/components/ui/button'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -111,6 +112,7 @@ export const Layout = ({ children }) => {
 
           {/* Right side actions */}
           <div className="flex items-center gap-4">
+            <NotificationBell />
             <ThemeSwitcher />
           </div>
         </header>

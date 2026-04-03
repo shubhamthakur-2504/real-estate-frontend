@@ -7,6 +7,7 @@ import { Properties } from '@/pages/Properties'
 import { BuyerProperties } from '@/pages/BuyerProperties'
 import { BuyerInquiries } from '@/pages/BuyerInquiries'
 import { Wishlist } from '@/pages/Wishlist'
+import { Notifications } from '@/pages/Notifications'
 import { Leads } from '@/pages/Leads'
 import { Settings } from '@/pages/Settings'
 import Login from '@/components/auth/Login'
@@ -65,6 +66,10 @@ function App() {
             <Route
               path="/buyer/wishlist"
               element={<ProtectedRoute element={<Wishlist />} allowedRoles={['buyer']} />}
+            />
+            <Route
+              path="/notifications"
+              element={<ProtectedRoute element={<Notifications />} allowedRoles={['buyer', 'agent', 'admin']} />}
             />
             <Route
               path="/leads"
