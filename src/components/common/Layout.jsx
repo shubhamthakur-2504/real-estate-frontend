@@ -118,7 +118,7 @@ export const Layout = ({ children }) => {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-6 max-w-7xl mx-auto w-full">
             {children}
           </div>

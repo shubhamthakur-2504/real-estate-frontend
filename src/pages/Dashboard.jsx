@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { TrendingUp, Users, Home, FileText, AlertCircle } from 'lucide-react'
+import { TrendingUp, Users, Home, FileText, AlertCircle, Plus, BarChart3, Settings } from 'lucide-react'
 import { propertiesApi, leadsApi } from '@/services'
 import { useAuthStore } from '@/utils/authStore'
+import { useNavigate } from 'react-router-dom'
 
 export function Dashboard() {
   const { user } = useAuthStore()
+  const navigate = useNavigate()
   const [propertiesStats, setPropertiesStats] = useState(null)
   const [leadsStats, setLeadsStats] = useState(null)
   const [recentProperties, setRecentProperties] = useState([])
@@ -191,28 +193,85 @@ export function Dashboard() {
 
         {/* Quick Actions */}
         <Card className="p-6 border border-light dark:border-dark">
-          <h2 className="text-xl font-bold text-light-primary dark:text-dark-primary mb-4">
-            Quick Actions
+          <h2 className="text-xl font-bold text-light-primary dark:text-dark-primary mb-5">
+            Quick Access
           </h2>
-          <div className="space-y-3">
-            <Button className="w-full bg-primary-600 hover:bg-primary-700 text-white">
-              Add Property
-            </Button>
-            <Button className="w-full bg-secondary-600 hover:bg-secondary-700 text-white">
-              Add Lead
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full border-light dark:border-dark"
+          <div className="space-y-2">
+            {/* Add Property Button */}
+            <button
+              onClick={() => navigate('/properties')}
+              className="w-full p-4 flex items-center gap-3 rounded-lg border border-light dark:border-dark hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-400 dark:hover:border-blue-600 transition-all group"
             >
-              View Reports
-            </Button>
-            <Button
-              variant="outline"
-              className="w-full border-light dark:border-dark"
+              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900 group-hover:bg-blue-200 dark:group-hover:bg-blue-800 transition-colors">
+                <Plus size={20} className="text-blue-600 dark:text-blue-400" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="font-semibold text-light-primary dark:text-dark-primary text-sm">
+                  Add Property
+                </p>
+                <p className="text-xs text-light-secondary dark:text-dark-secondary">
+                  List new property
+                </p>
+              </div>
+              <span className="text-light-secondary dark:text-dark-secondary">→</span>
+            </button>
+
+            {/* View Leads Button */}
+            <button
+              onClick={() => navigate('/leads')}
+              className="w-full p-4 flex items-center gap-3 rounded-lg border border-light dark:border-dark hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 dark:hover:border-green-600 transition-all group"
             >
-              Settings
-            </Button>
+              <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900 group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors">
+                <Users size={20} className="text-green-600 dark:text-green-400" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="font-semibold text-light-primary dark:text-dark-primary text-sm">
+                  View Leads
+                </p>
+                <p className="text-xs text-light-secondary dark:text-dark-secondary">
+                  Manage leads
+                </p>
+              </div>
+              <span className="text-light-secondary dark:text-dark-secondary">→</span>
+            </button>
+
+            {/* View Reports Button */}
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="w-full p-4 flex items-center gap-3 rounded-lg border border-light dark:border-dark hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-400 dark:hover:border-purple-600 transition-all group"
+            >
+              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900 group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors">
+                <BarChart3 size={20} className="text-purple-600 dark:text-purple-400" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="font-semibold text-light-primary dark:text-dark-primary text-sm">
+                  Analytics
+                </p>
+                <p className="text-xs text-light-secondary dark:text-dark-secondary">
+                  View reports
+                </p>
+              </div>
+              <span className="text-light-secondary dark:text-dark-secondary">→</span>
+            </button>
+
+            {/* Settings Button */}
+            <button
+              onClick={() => navigate('/settings')}
+              className="w-full p-4 flex items-center gap-3 rounded-lg border border-light dark:border-dark hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-400 dark:hover:border-orange-600 transition-all group"
+            >
+              <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900 group-hover:bg-orange-200 dark:group-hover:bg-orange-800 transition-colors">
+                <Settings size={20} className="text-orange-600 dark:text-orange-400" />
+              </div>
+              <div className="text-left flex-1">
+                <p className="font-semibold text-light-primary dark:text-dark-primary text-sm">
+                  Settings
+                </p>
+                <p className="text-xs text-light-secondary dark:text-dark-secondary">
+                  Manage account
+                </p>
+              </div>
+              <span className="text-light-secondary dark:text-dark-secondary">→</span>
+            </button>
           </div>
         </Card>
       </div>
