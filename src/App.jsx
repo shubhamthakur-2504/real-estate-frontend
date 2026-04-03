@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-
 import { Toaster } from 'sonner'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Layout } from '@/components/common/Layout'
+import { Landing } from '@/pages/Landing'
 import { Dashboard } from '@/pages/Dashboard'
 import { Properties } from '@/pages/Properties'
 import { BuyerProperties } from '@/pages/BuyerProperties'
@@ -33,14 +34,14 @@ function ProtectedLayout() {
 }
 
 function App() {
-  const { user } = useAuthStore()
-  const defaultRoute = user?.role === 'buyer' ? '/buyer/properties' : '/dashboard'
-
   return (
     <ThemeProvider>
       <Router>
         <Toaster position="top-right" />
         <Routes>
+          {/* Landing Page - public route */}
+          <Route path="/" element={<Landing />} />
+
           {/* Auth Routes - accessible without login */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -81,16 +82,8 @@ function App() {
             />
           </Route>
 
-          {/* Redirect root based on auth status */}
-          <Route
-            path="/"
-            element={
-              user ? <Navigate to={defaultRoute} replace /> : <Navigate to="/login" replace />
-            }
-          />
-
           {/* 404 catch-all */}
-          <Route path="*" element={<Navigate to={user ? defaultRoute : '/login'} replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </ThemeProvider>
