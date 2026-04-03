@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Menu, X, LogOut, LayoutDashboard, Home, Users, Settings } from 'lucide-react'
+import { Menu, X, LogOut, LayoutDashboard, Home, Users, Settings, Heart } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useAuthStore } from '@/utils/authStore'
@@ -18,6 +18,7 @@ export const Layout = ({ children }) => {
   const navItems = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['agent', 'admin'] },
     { label: 'Properties', href: propertiesRoute, icon: Home, roles: ['buyer', 'agent', 'admin'] },
+    { label: 'My Inquiries', href: '/buyer/inquiries', icon: Heart, roles: ['buyer'] },
     { label: 'Leads', href: '/leads', icon: Users, roles: ['agent', 'admin'] },
     { label: 'Settings', href: '/settings', icon: Settings, roles: ['buyer', 'agent', 'admin'] },
   ]

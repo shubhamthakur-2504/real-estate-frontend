@@ -141,7 +141,10 @@ export function Leads() {
 
     try {
       setIsSubmitting(true)
-      await leadsApi.update(selectedLead._id, formData)
+      const payload = Object.fromEntries(
+        Object.entries(formData).filter(([, value]) => value !== '')
+      )
+      await leadsApi.update(selectedLead._id, payload)
       toast.success('Lead updated successfully')
       setUpdateModalOpen(false)
 
