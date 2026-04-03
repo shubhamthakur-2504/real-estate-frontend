@@ -96,7 +96,7 @@ export function AddPropertyModal({ isOpen, onClose, onSubmit, isSubmitting }) {
       onClick={() => !isSubmitting && onClose()}
     >
       <Card
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 border border-light dark:border-dark shadow-2xl"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-6 border border-light dark:border-dark shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}

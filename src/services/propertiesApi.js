@@ -106,6 +106,15 @@ export const propertiesApi = {
   },
 
   /**
+   * Get properties created by logged-in user (agent or admin)
+   * For dropdown in forms - returns minimal data
+   * @returns {Promise} - { properties }
+   */
+  getPropertiesCreatedByMe: () => {
+    return api.get('/properties/me/created').then((res) => res.data.data || res.data)
+  },
+
+  /**
    * Search properties by location
    * @param {Object} coords - { latitude, longitude, radius }
    * @returns {Promise} - { properties }

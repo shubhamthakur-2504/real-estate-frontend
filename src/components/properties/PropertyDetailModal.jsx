@@ -54,7 +54,7 @@ export function PropertyDetailModal({
       onClick={() => !isUpdating && onClose()}
     >
       <Card
-        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-light dark:border-dark shadow-2xl"
+        className="w-full max-w-2xl max-h-[90vh] overflow-y-auto scrollbar-hide p-6 border border-light dark:border-dark shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Image Gallery */}
