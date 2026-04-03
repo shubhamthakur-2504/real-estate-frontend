@@ -70,7 +70,7 @@ export const leadsApi = {
    * @returns {Promise} - { lead }
    */
   updateStatus: (id, status) => {
-    return api.put(`/leads/${id}/status`, { status }).then((res) => res.data)
+    return api.patch(`/leads/${id}/status`, { status }).then((res) => res.data)
   },
 
   /**
@@ -89,6 +89,26 @@ export const leadsApi = {
    */
   getStats: () => {
     return api.get('/leads/stats').then((res) => res.data)
+  },
+
+  /**
+   * Get my inquiries (for buyers)
+   * @param {Object} filters - { status, page, limit }
+   * @returns {Promise} - { leads, pagination }
+   */
+  getMyInquiries: (filters = {}) => {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value)
+      }
+    })
+    return api.get('/leads/buyer/my-leads?' + params.toString()).then((res) => {
+      console.log('Raw API response:', res)
+      const data = res.data?.data || res.data
+      console.log('Extracted data:', data)
+      return data
+    })
   },
 
   /**

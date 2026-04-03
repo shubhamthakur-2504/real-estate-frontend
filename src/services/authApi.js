@@ -57,13 +57,13 @@ export const authApi = {
 
   /**
    * Update user profile
-   * @param {Object} userData - { firstName, lastName, phone, profilePicture }
+   * @param {Object} userData - { firstname, lastname, phone, bio }
    * @returns {Promise} - { user }
    */
   updateProfile: (userData) => {
     return api.put('/auth/profile', userData).then((res) => {
-      const { user } = res.data.data || {}
-      return { user }
+      const data = res.data.data || res.data
+      return { user: data }
     })
   },
 
