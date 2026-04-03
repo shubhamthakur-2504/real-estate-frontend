@@ -6,8 +6,8 @@ import { Dashboard } from '@/pages/Dashboard'
 import { Properties } from '@/pages/Properties'
 import { BuyerProperties } from '@/pages/BuyerProperties'
 import { BuyerInquiries } from '@/pages/BuyerInquiries'
+import { Wishlist } from '@/pages/Wishlist'
 import { Leads } from '@/pages/Leads'
-import { UploadPage } from '@/pages/Upload'
 import { Settings } from '@/pages/Settings'
 import Login from '@/components/auth/Login'
 import Register from '@/components/auth/Register'
@@ -63,12 +63,12 @@ function App() {
               element={<ProtectedRoute element={<BuyerInquiries />} allowedRoles={['buyer']} />}
             />
             <Route
-              path="/leads"
-              element={<ProtectedRoute element={<Leads />} allowedRoles={['agent', 'admin']} />}
+              path="/buyer/wishlist"
+              element={<ProtectedRoute element={<Wishlist />} allowedRoles={['buyer']} />}
             />
             <Route
-              path="/upload"
-              element={<ProtectedRoute element={<UploadPage />} allowedRoles={['agent', 'admin']} />}
+              path="/leads"
+              element={<ProtectedRoute element={<Leads />} allowedRoles={['agent', 'admin']} />}
             />
             <Route
               path="/settings"
