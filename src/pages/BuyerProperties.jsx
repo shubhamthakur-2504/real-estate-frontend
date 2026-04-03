@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Search, MapPin, BedDouble, Bath, ArrowUpDown, AlertCircle } from 'lucide-react'
-import { propertiesApi } from '@/services'
+import { Search, MapPin, BedDouble, Bath, ArrowUpDown, AlertCircle, Heart } from 'lucide-react'
+import { propertiesApi, wishlistApi } from '@/services'
 import { BuyerPropertyDetailModal } from '@/components/properties/BuyerPropertyDetailModal'
+import { toast } from 'sonner'
 
 export function BuyerProperties() {
   const [properties, setProperties] = useState([])
@@ -13,6 +14,8 @@ export function BuyerProperties() {
   const [sortBy, setSortBy] = useState('newest')
   const [selectedProperty, setSelectedProperty] = useState(null)
   const [detailModalOpen, setDetailModalOpen] = useState(false)
+  const [wishlistIds, setWishlistIds] = useState(new Set())
+  const [wishlistLoading, setWishlistLoading] = useState({})
 
   // Filters
   const [propertyTypeFilter, setPropertyTypeFilter] = useState('')
@@ -20,13 +23,27 @@ export function BuyerProperties() {
   const [priceRange, setPriceRange] = useState({ min: '', max: '' })
   const [cardImageLoading, setCardImageLoading] = useState({})
 
+  // Load properties and wishlist
   useEffect(() => {
-    const fetchProperties = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true)
         setError(null)
+        
+        // Fetch properties
         const res = await propertiesApi.getAll({ limit: 100, status: 'active' })
         setProperties(res.properties || [])
+        
+        // Fetch buyer's wishlist to mark which properties are liked
+        try {
+          const wishlistRes = await wishlistApi.getWishlist({ limit: 100 })
+          const likedIds = new Set(
+            (wishlistRes?.wishlist || []).map(item => item.property._id)
+          )
+          setWishlistIds(likedIds)
+        } catch (wishlistErr) {
+          console.error('Error loading wishlist:', wishlistErr)
+        }
       } catch (err) {
         console.error('Error loading buyer properties:', err)
         setError(err.message || 'Failed to load properties')
@@ -35,7 +52,7 @@ export function BuyerProperties() {
       }
     }
 
-    fetchProperties()
+    fetchData()
   }, [])
 
   const visibleProperties = useMemo(() => {
@@ -94,6 +111,35 @@ export function BuyerProperties() {
   const handleViewDetails = (property) => {
     setSelectedProperty(property)
     setDetailModalOpen(true)
+  }
+
+  const handleWishlist = async (e, propertyId) => {
+    e.stopPropagation()
+    
+    try {
+      setWishlistLoading((prev) => ({ ...prev, [propertyId]: true }))
+      
+      if (wishlistIds.has(propertyId)) {
+        // Remove from wishlist
+        await wishlistApi.remove(propertyId)
+        setWishlistIds((prev) => {
+          const newSet = new Set(prev)
+          newSet.delete(propertyId)
+          return newSet
+        })
+        toast.success('Removed from wishlist')
+      } else {
+        // Add to wishlist
+        await wishlistApi.add(propertyId)
+        setWishlistIds((prev) => new Set([...prev, propertyId]))
+        toast.success('Added to wishlist')
+      }
+    } catch (err) {
+      console.error('Error updating wishlist:', err)
+      toast.error(err.message || 'Failed to update wishlist')
+    } finally {
+      setWishlistLoading((prev) => ({ ...prev, [propertyId]: false }))
+    }
   }
 
   return (
@@ -236,6 +282,17 @@ export function BuyerProperties() {
                 className="overflow-hidden border border-light dark:border-dark hover:shadow-lg transition-shadow"
               >
                 <div className="h-44 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-slate-800 dark:to-slate-700 relative">
+                  <button
+                    onClick={(e) => handleWishlist(e, p._id)}
+                    disabled={wishlistLoading[p._id]}
+                    className="absolute top-3 right-3 z-20 p-2 bg-white/80 hover:bg-white dark:bg-slate-900/80 dark:hover:bg-slate-900 rounded-full shadow-md transition-all disabled:opacity-50"
+                    title={wishlistIds.has(p._id) ? 'Remove from wishlist' : 'Add to wishlist'}
+                  >
+                    <Heart
+                      size={20}
+                      className={wishlistIds.has(p._id) ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-400'}
+                    />
+                  </button>
                   {p.images && p.images.length > 0 && (
                     <>
                       {cardImageLoading[p._id] && (
