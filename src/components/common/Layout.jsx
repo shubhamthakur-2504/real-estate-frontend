@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Menu, X, LogOut, LayoutDashboard, Home, Users, Settings, Heart, CheckCircle } from 'lucide-react'
+import { Menu, X, LogOut, LayoutDashboard, Home, Users, Settings, Heart, CheckCircle, Wallet } from 'lucide-react'
 import { useTheme } from '@/contexts/ThemeContext'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { NotificationBell } from '@/components/notifications/NotificationBell'
@@ -21,6 +21,8 @@ export const Layout = ({ children }) => {
     { label: 'Properties', href: propertiesRoute, icon: Home, roles: ['buyer', 'agent', 'admin'] },
     { label: 'My Wishlist', href: '/buyer/wishlist', icon: Heart, roles: ['buyer'] },
     { label: 'My Inquiries', href: '/buyer/inquiries', icon: CheckCircle, roles: ['buyer'] },
+    { label: 'Booking Requests', href: '/buyer/booking-requests', icon: Wallet, roles: ['buyer'] },
+    { label: 'Booking Requests', href: '/agent/booking-requests', icon: Wallet, roles: ['agent', 'admin'] },
     { label: 'Leads', href: '/leads', icon: Users, roles: ['agent', 'admin'] },
     { label: 'Settings', href: '/settings', icon: Settings, roles: ['buyer', 'agent', 'admin'] },
   ]

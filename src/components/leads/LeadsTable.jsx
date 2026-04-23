@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button'
-import { Mail, Phone, Calendar, Eye, Edit, Trash2, MessageSquare } from 'lucide-react'
+import { Mail, Phone, Calendar, Eye, Edit, Trash2, MessageSquare, Wallet } from 'lucide-react'
 
 export function LeadsTable({
   leads,
   onViewDetails,
   onEditStatus,
   onAddNote,
+  onSendBookingRequest,
   onDelete,
   loading,
 }) {
@@ -74,7 +75,9 @@ export function LeadsTable({
 
   return (
     <div className="space-y-3">
-      {leads.map((lead) => (
+      {leads.map((lead) => {
+        const isTokenBlocked = lead.status === 'lost' || lead.status === 'converted'
+        return (
         <div
           key={lead._id}
           className="p-4 border border-light dark:border-dark rounded-lg hover:shadow-md dark:hover:shadow-dark transition-shadow bg-light-bg dark:bg-dark-bg"
@@ -159,6 +162,17 @@ export function LeadsTable({
               Note
             </Button>
             <Button
+              onClick={() => onSendBookingRequest(lead)}
+              variant="outline"
+              size="sm"
+              className="border-light dark:border-dark"
+              disabled={isTokenBlocked}
+              title={isTokenBlocked ? 'Token request is disabled for lost/converted leads' : 'Send booking token request'}
+            >
+              <Wallet size={14} className="mr-1" />
+              Token
+            </Button>
+            <Button
               onClick={() => onDelete(lead)}
               variant="outline"
               size="sm"
@@ -169,7 +183,8 @@ export function LeadsTable({
             </Button>
           </div>
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
