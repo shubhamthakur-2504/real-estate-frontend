@@ -248,7 +248,7 @@ export function AddLeadModal({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-primary text-primary-foreground hover:brightness-110 disabled:opacity-50"
+              className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white border border-blue-400/30 font-semibold shadow-lg shadow-blue-900/25 transition-all duration-200 hover:from-blue-500 hover:via-indigo-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-800/30 hover:scale-[1.01] active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:from-sky-500 dark:via-blue-500 dark:to-indigo-500 dark:text-slate-950 dark:border-sky-200/20 dark:shadow-sky-900/30 dark:hover:from-sky-400 dark:hover:via-blue-400 dark:hover:to-indigo-400 dark:hover:shadow-sky-800/40 dark:focus-visible:ring-sky-300/50 dark:focus-visible:ring-offset-slate-900 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Creating...' : 'Create Lead'}
             </Button>

@@ -255,12 +255,17 @@ export function BuyerPropertyDetailModal({ property, isOpen, onClose, onInquiryS
 
           {/* Inquiry Form or Button */}
           {!showInquiryForm ? (
-            <Button
-              onClick={() => setShowInquiryForm(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg font-semibold rounded-lg"
-            >
-              Send Inquiry
-            </Button>
+            <div className="space-y-3">
+              <Button
+                onClick={() => setShowInquiryForm(true)}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg font-semibold rounded-lg"
+              >
+                Send Inquiry
+              </Button>
+              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                Booking token payment is available after agent approval from the booking requests page.
+              </p>
+            </div>
           ) : (
             <form onSubmit={handleSendInquiry} className="space-y-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
               <h3 className="font-semibold text-gray-900 dark:text-white">Send Inquiry</h3>

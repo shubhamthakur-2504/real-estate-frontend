@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,19 +14,9 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [loginSuccess, setLoginSuccess] = useState(false)
   const { navigateToReturn } = useReturnUrl()
-  const { user } = useAuthStore()
   const { login: storeLogin } = useAuthStore()
   const [searchParams] = useSearchParams()
-
-  // Watch for successful login and navigate
-  useEffect(() => {
-    if (loginSuccess && user) {
-      navigateToReturn()
-      setLoginSuccess(false)
-    }
-  }, [loginSuccess, user, navigateToReturn])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -45,9 +35,9 @@ export default function Login() {
         // Store user and token
         storeLogin(response.user, response.token)
         toast.success('Login successful!')
-        
-        // Set flag to trigger navigation when user state updates
-        setLoginSuccess(true)
+
+        // Navigate immediately using role-aware fallback route.
+        navigateToReturn(response.user.role)
       } else {
         setError('Login failed. Please try again.')
         toast.error('Login failed: Invalid response from server')
