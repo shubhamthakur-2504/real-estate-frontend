@@ -7,9 +7,11 @@ import { Dashboard } from '@/pages/Dashboard'
 import { Properties } from '@/pages/Properties'
 import { BuyerProperties } from '@/pages/BuyerProperties'
 import { BuyerInquiries } from '@/pages/BuyerInquiries'
+import { BookingRequests } from '@/pages/BookingRequests'
 import { Wishlist } from '@/pages/Wishlist'
 import { Notifications } from '@/pages/Notifications'
 import { Leads } from '@/pages/Leads'
+import { AgentBookingRequests } from '@/pages/AgentBookingRequests'
 import { Settings } from '@/pages/Settings'
 import Login from '@/components/auth/Login'
 import Register from '@/components/auth/Register'
@@ -65,6 +67,10 @@ function App() {
               element={<ProtectedRoute element={<BuyerInquiries />} allowedRoles={['buyer']} />}
             />
             <Route
+              path="/buyer/booking-requests"
+              element={<ProtectedRoute element={<BookingRequests />} allowedRoles={['buyer']} />}
+            />
+            <Route
               path="/buyer/wishlist"
               element={<ProtectedRoute element={<Wishlist />} allowedRoles={['buyer']} />}
             />
@@ -75,6 +81,10 @@ function App() {
             <Route
               path="/leads"
               element={<ProtectedRoute element={<Leads />} allowedRoles={['agent', 'admin']} />}
+            />
+            <Route
+              path="/agent/booking-requests"
+              element={<ProtectedRoute element={<AgentBookingRequests />} allowedRoles={['agent', 'admin']} />}
             />
             <Route
               path="/settings"

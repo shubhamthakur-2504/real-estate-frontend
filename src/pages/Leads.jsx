@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, AlertCircle, Calendar, List } from 'lucide-react'
-import { leadsApi, propertiesApi } from '@/services'
+import { bookingRequestsApi, leadsApi, propertiesApi } from '@/services'
 import { useAuthStore } from '@/utils/authStore'
 import { toast } from 'sonner'
 import { LeadsFilter } from '@/components/leads/LeadsFilter'
@@ -13,6 +13,7 @@ import { AddNoteModal } from '@/components/leads/AddNoteModal'
 import { DeleteConfirmModal } from '@/components/leads/DeleteConfirmModal'
 import { AddLeadModal } from '@/components/leads/AddLeadModal'
 import { UpcomingSchedules } from '@/components/leads/UpcomingSchedules'
+import { SendBookingRequestModal } from '@/components/leads/SendBookingRequestModal'
 
 export function Leads() {
   const { user } = useAuthStore()
@@ -34,6 +35,7 @@ export function Leads() {
   const [updateModalOpen, setUpdateModalOpen] = useState(false)
   const [noteModalOpen, setNoteModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [bookingRequestModalOpen, setBookingRequestModalOpen] = useState(false)
 
   // Current selected lead
   const [selectedLead, setSelectedLead] = useState(null)
@@ -204,6 +206,32 @@ export function Leads() {
     setDeleteModalOpen(true)
   }
 
+  const handleSendBookingRequest = (lead) => {
+    if (lead.status === 'lost' || lead.status === 'converted') {
+      toast.error('Cannot send booking token for lost or converted leads')
+      return
+    }
+
+    setSelectedLead(lead)
+    setBookingRequestModalOpen(true)
+  }
+
+  const handleSendBookingRequestSubmit = async (payload) => {
+    try {
+      setIsSubmitting(true)
+      await bookingRequestsApi.create(payload)
+      toast.success('Booking token request sent to buyer')
+      setBookingRequestModalOpen(false)
+      setSelectedLead(null)
+    } catch (err) {
+      console.error('Error sending booking request:', err)
+      const message = err?.response?.data?.message || err.message || 'Failed to send booking request'
+      toast.error(message)
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   // Handle delete confirm
   const handleDeleteConfirm = async () => {
     if (!selectedLead) return
@@ -237,7 +265,7 @@ export function Leads() {
         </div>
         <Button
           onClick={handleAddLead}
-          className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2"
+          className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white border border-blue-400/30 font-semibold shadow-lg shadow-blue-900/25 transition-all duration-200 hover:from-blue-500 hover:via-indigo-500 hover:to-blue-600 hover:shadow-xl hover:shadow-blue-800/30 hover:scale-[1.01] active:scale-[0.99] focus-visible:ring-2 focus-visible:ring-blue-400/50 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:from-sky-500 dark:via-blue-500 dark:to-indigo-500 dark:text-slate-950 dark:border-sky-200/20 dark:shadow-sky-900/30 dark:hover:from-sky-400 dark:hover:via-blue-400 dark:hover:to-indigo-400 dark:hover:shadow-sky-800/40 dark:focus-visible:ring-sky-300/50 dark:focus-visible:ring-offset-slate-900 flex items-center gap-2"
         >
           <Plus size={20} />
           Add Lead
@@ -305,6 +333,7 @@ export function Leads() {
             onViewDetails={handleViewDetails}
             onEditStatus={handleEditStatus}
             onAddNote={handleAddNote}
+            onSendBookingRequest={handleSendBookingRequest}
             onDelete={handleDelete}
             loading={loading}
           />
@@ -390,6 +419,17 @@ export function Leads() {
         }}
         onConfirm={handleDeleteConfirm}
         isDeleting={isSubmitting}
+      />
+
+      <SendBookingRequestModal
+        lead={selectedLead}
+        isOpen={bookingRequestModalOpen}
+        onClose={() => {
+          setBookingRequestModalOpen(false)
+          setSelectedLead(null)
+        }}
+        onSubmit={handleSendBookingRequestSubmit}
+        isSubmitting={isSubmitting}
       />
     </div>
   )
