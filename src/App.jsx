@@ -20,7 +20,15 @@ import { ProtectedRoute } from '@/components/common/ProtectedRoute'
 
 // Protected Layout Component - checks auth before rendering
 function ProtectedLayout() {
-  const { user } = useAuthStore()
+  const { user, hasHydrated } = useAuthStore()
+
+  if (!hasHydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-foreground">
+        <div className="text-sm text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
 
   if (!user) {
     const currentPath = window.location.pathname

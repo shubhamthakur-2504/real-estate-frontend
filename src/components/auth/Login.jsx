@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { flushSync } from 'react-dom'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -8,12 +9,18 @@ import { authApi } from '@/services'
 import { useReturnUrl } from '@/hooks/useReturnUrl'
 import { toast } from 'sonner'
 
+const getDefaultRouteByRole = (role) => {
+  if (role === 'buyer') return '/buyer/properties'
+  return '/dashboard'
+}
+
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const navigate = useNavigate()
   const { navigateToReturn } = useReturnUrl()
   const { login: storeLogin } = useAuthStore()
   const [searchParams] = useSearchParams()
@@ -33,11 +40,15 @@ export default function Login() {
       
       if (response?.token && response?.user) {
         // Store user and token
-        storeLogin(response.user, response.token)
+        flushSync(() => {
+          storeLogin(response.user, response.token)
+        })
         toast.success('Login successful!')
-
-        // Navigate immediately using role-aware fallback route.
-        navigateToReturn(response.user.role)
+        if (searchParams.has('returnUrl')) {
+          navigateToReturn(response.user.role)
+        } else {
+          navigate(getDefaultRouteByRole(response.user.role), { replace: true })
+        }
       } else {
         setError('Login failed. Please try again.')
         toast.error('Login failed: Invalid response from server')
