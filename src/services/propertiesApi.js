@@ -99,10 +99,18 @@ export const propertiesApi = {
 
   /**
    * Get properties owned by current user
+   * @param {Object} filters - { page, limit }
    * @returns {Promise} - { properties }
    */
-  getMyProperties: () => {
-    return api.get('/properties/agent/my').then((res) => res.data.data || res.data)
+  getMyProperties: (filters = {}) => {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value)
+      }
+    })
+    const query = params.toString()
+    return api.get(`/properties/agent/my${query ? `?${query}` : ''}`).then((res) => res.data.data || res.data)
   },
 
   /**

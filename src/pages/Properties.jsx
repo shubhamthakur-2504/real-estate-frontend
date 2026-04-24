@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, AlertCircle, MapPin, Eye, Edit2, Trash2 } from 'lucide-react'
@@ -12,10 +12,14 @@ import { PropertyDetailModal } from '@/components/properties/PropertyDetailModal
 import { DeleteConfirmModal } from '@/components/properties/DeleteConfirmModal'
 
 export function Properties() {
+  const PAGE_SIZE = 20
   const { user } = useAuthStore()
   const [properties, setProperties] = useState([])
   const [filteredProperties, setFilteredProperties] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
@@ -27,30 +31,78 @@ export function Properties() {
   const [deleting, setDeleting] = useState(false)
   const [creating, setCreating] = useState(false)
   const [updating, setUpdating] = useState(false)
+  const loadMoreRef = useRef(null)
 
-  const loadProperties = async () => {
-    setLoading(true)
-    setError(null)
+  const loadProperties = async (targetPage, reset = false) => {
+
+    if (reset) {
+      setLoading(true)
+      setError(null)
+      setHasMore(true)
+    } else {
+      if (loadingMore || !hasMore) return
+      setLoadingMore(true)
+    }
+
     try {
       const isAdmin = user?.role === 'admin'
       const response = isAdmin
-        ? await propertiesApi.getAll({ limit: 100 })
-        : await propertiesApi.getMyProperties()
+        ? await propertiesApi.getAll({ page: targetPage, limit: PAGE_SIZE })
+        : await propertiesApi.getMyProperties({ page: targetPage, limit: PAGE_SIZE })
 
       const propsData = response.properties || []
-      setProperties(propsData)
-      setFilteredProperties(propsData)
+      const pagination = response.pagination || {}
+      const nextHasMore = pagination.totalPages
+        ? pagination.currentPage < pagination.totalPages
+        : propsData.length === PAGE_SIZE
+
+      setProperties((prev) => {
+        if (reset) return propsData
+
+        const existingIds = new Set(prev.map((item) => item._id))
+        const uniqueNew = propsData.filter((item) => !existingIds.has(item._id))
+        return [...prev, ...uniqueNew]
+      })
+
+      setHasMore(nextHasMore)
+      setCurrentPage(targetPage + 1)
     } catch (err) {
       console.error('Error fetching properties:', err)
       setError(err.message || 'Failed to load properties')
     } finally {
-      setLoading(false)
+      if (reset) {
+        setLoading(false)
+      } else {
+        setLoadingMore(false)
+      }
     }
   }
 
   useEffect(() => {
-    loadProperties()
+    setCurrentPage(1)
+    setProperties([])
+    loadProperties(1, true)
   }, [user?.role])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting && !loading && !loadingMore && hasMore) {
+          loadProperties(currentPage, false)
+        }
+      },
+      { rootMargin: '120px' }
+    )
+
+    const target = loadMoreRef.current
+    if (target) observer.observe(target)
+
+    return () => {
+      if (target) observer.unobserve(target)
+      observer.disconnect()
+    }
+  }, [currentPage, hasMore, loading, loadingMore, user?.role])
 
   // Filter properties based on search and type
   useEffect(() => {
@@ -115,7 +167,7 @@ export function Properties() {
 
       toast.success('Property created successfully!')
       setShowAddForm(false)
-      await loadProperties()
+      await loadProperties(1, true)
     } catch (err) {
       console.error('Create property failed:', err)
       toast.error(err.response?.data?.message || 'Failed to create property')
@@ -171,7 +223,7 @@ export function Properties() {
 
       toast.success('Property updated successfully!')
       setShowEditModal(false)
-      await loadProperties()
+      await loadProperties(1, true)
     } catch (err) {
       console.error('Update property failed:', err)
       toast.error(err.response?.data?.message || 'Failed to update property')
@@ -189,7 +241,7 @@ export function Properties() {
       toast.success('Property deleted successfully!')
       setShowDeleteConfirm(false)
       setSelectedProperty(null)
-      await loadProperties()
+      await loadProperties(1, true)
     } catch (err) {
       console.error('Delete property failed:', err)
       toast.error(err.response?.data?.message || 'Failed to delete property')
@@ -202,7 +254,7 @@ export function Properties() {
     try {
       await propertiesApi.update(propertyId, { status: newStatus })
       toast.success(`Property status updated to ${newStatus}`)
-      await loadProperties()
+      await loadProperties(1, true)
     } catch (err) {
       console.error('Status update failed:', err)
       toast.error('Failed to update property status')
@@ -364,6 +416,18 @@ export function Properties() {
           </div>
         )}
       </Card>
+
+      <div ref={loadMoreRef} className="h-6" />
+      {!loading && loadingMore && (
+        <div className="text-center text-sm text-light-secondary dark:text-dark-secondary">
+          Loading more properties...
+        </div>
+      )}
+      {!loading && !hasMore && properties.length > 0 && (
+        <div className="text-center text-sm text-light-secondary dark:text-dark-secondary">
+          You've reached the end.
+        </div>
+      )}
 
       {/* Stats */}
       {!loading && (

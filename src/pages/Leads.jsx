@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Plus, AlertCircle, Calendar, List } from 'lucide-react'
@@ -16,11 +16,15 @@ import { UpcomingSchedules } from '@/components/leads/UpcomingSchedules'
 import { SendBookingRequestModal } from '@/components/leads/SendBookingRequestModal'
 
 export function Leads() {
+  const PAGE_SIZE = 20
   const { user } = useAuthStore()
   const [leads, setLeads] = useState([])
   const [properties, setProperties] = useState([])
   const [filteredLeads, setFilteredLeads] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
   const [error, setError] = useState(null)
   const [viewMode, setViewMode] = useState('all') // 'all' or 'upcoming'
 
@@ -40,37 +44,92 @@ export function Leads() {
   // Current selected lead
   const [selectedLead, setSelectedLead] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const loadMoreRef = useRef(null)
+
+  const loadLeads = async (targetPage, reset = false) => {
+    if (reset) {
+      setLoading(true)
+      setError(null)
+      setHasMore(true)
+    } else {
+      if (loadingMore || !hasMore) return
+      setLoadingMore(true)
+    }
+
+    try {
+      const isAdmin = user?.role === 'admin'
+      const leadsResponse = isAdmin
+        ? await leadsApi.getAll({ page: targetPage, limit: PAGE_SIZE })
+        : await leadsApi.getAssignedToMe({ page: targetPage, limit: PAGE_SIZE })
+
+      const leadsData = leadsResponse.leads || leadsResponse || []
+      const pagination = leadsResponse.pagination || {}
+      const nextHasMore = pagination.totalPages
+        ? pagination.currentPage < pagination.totalPages
+        : leadsData.length === PAGE_SIZE
+
+      setLeads((prev) => {
+        if (reset) return leadsData
+
+        const existingIds = new Set(prev.map((item) => item._id))
+        const uniqueNew = leadsData.filter((item) => !existingIds.has(item._id))
+        return [...prev, ...uniqueNew]
+      })
+
+      setHasMore(nextHasMore)
+      setCurrentPage(targetPage + 1)
+    } catch (err) {
+      console.error('Error fetching leads:', err)
+      setError(err.message || 'Failed to load leads')
+      toast.error('Failed to load leads')
+    } finally {
+      if (reset) {
+        setLoading(false)
+      } else {
+        setLoadingMore(false)
+      }
+    }
+  }
 
   // Fetch leads and properties
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProperties = async () => {
       try {
-        setLoading(true)
-        setError(null)
-        
-        // Fetch leads
-        const isAdmin = user?.role === 'admin'
-        const leadsResponse = isAdmin
-          ? await leadsApi.getAll({ limit: 100 })
-          : await leadsApi.getAssignedToMe()
-        const leadsData = leadsResponse.leads || leadsResponse || []
-        setLeads(leadsData)
-
         // Fetch properties created by logged-in user (agent or admin)
         const propsResponse = await propertiesApi.getPropertiesCreatedByMe()
         const propsData = propsResponse.properties || propsResponse || []
         setProperties(propsData)
       } catch (err) {
-        console.error('Error fetching data:', err)
-        setError(err.message || 'Failed to load data')
-        toast.error('Failed to load data')
-      } finally {
-        setLoading(false)
+        console.error('Error fetching properties:', err)
+        toast.error('Failed to load properties list')
       }
     }
 
-    fetchData()
+    setCurrentPage(1)
+    setLeads([])
+    loadLeads(1, true)
+    fetchProperties()
   }, [user?.role])
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries
+        if (entry.isIntersecting && viewMode === 'all' && !loading && !loadingMore && hasMore) {
+          loadLeads(currentPage, false)
+        }
+      },
+      { rootMargin: '120px' }
+    )
+
+    const target = loadMoreRef.current
+    if (target) observer.observe(target)
+
+    return () => {
+      if (target) observer.unobserve(target)
+      observer.disconnect()
+    }
+  }, [currentPage, hasMore, loading, loadingMore, viewMode, user?.role])
 
   // Filter leads based on search and status
   useEffect(() => {
@@ -337,6 +396,18 @@ export function Leads() {
             onDelete={handleDelete}
             loading={loading}
           />
+
+          <div ref={loadMoreRef} className="h-6" />
+          {!loading && loadingMore && (
+            <div className="text-center text-sm text-light-secondary dark:text-dark-secondary">
+              Loading more leads...
+            </div>
+          )}
+          {!loading && !hasMore && leads.length > 0 && (
+            <div className="text-center text-sm text-light-secondary dark:text-dark-secondary">
+              You've reached the end.
+            </div>
+          )}
 
           {/* Stats */}
           {!loading && (

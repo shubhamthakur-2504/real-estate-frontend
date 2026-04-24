@@ -113,10 +113,18 @@ export const leadsApi = {
 
   /**
    * Get my assigned leads (for agents)
+   * @param {Object} filters - { page, limit, status }
    * @returns {Promise} - { leads }
    */
-  getAssignedToMe: () => {
-    return api.get('/leads/agent/my-leads').then((res) => res.data.data || res.data)
+  getAssignedToMe: (filters = {}) => {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        params.append(key, value)
+      }
+    })
+    const query = params.toString()
+    return api.get(`/leads/agent/my-leads${query ? `?${query}` : ''}`).then((res) => res.data.data || res.data)
   },
 
   /**

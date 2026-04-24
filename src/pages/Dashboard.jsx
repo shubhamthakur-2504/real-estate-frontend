@@ -25,8 +25,8 @@ export function Dashboard() {
 
         // Admin sees global stats; agents see only their own portfolio and leads.
         const [propsRes, leadsRes] = await Promise.all([
-          isAdmin ? propertiesApi.getAll({ limit: 100 }) : propertiesApi.getMyProperties(),
-          isAdmin ? leadsApi.getAll({ limit: 100 }) : leadsApi.getAssignedToMe(),
+          isAdmin ? propertiesApi.getAll({ limit: 100 }) : propertiesApi.getMyProperties({ limit: 1000 }),
+          isAdmin ? leadsApi.getAll({ limit: 100 }) : leadsApi.getAssignedToMe({ limit: 1000 }),
         ])
 
         // Set stats
