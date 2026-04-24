@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import { Layout } from '@/components/common/Layout'
 import { Landing } from '@/pages/Landing'
 import { Dashboard } from '@/pages/Dashboard'
+import { Analytics } from '@/pages/Analytics'
 import { Properties } from '@/pages/Properties'
 import { BuyerProperties } from '@/pages/BuyerProperties'
 import { BuyerInquiries } from '@/pages/BuyerInquiries'
@@ -61,6 +62,10 @@ function App() {
             <Route
               path="/dashboard"
               element={<ProtectedRoute element={<Dashboard />} allowedRoles={['agent', 'admin']} />}
+            />
+            <Route
+              path="/analytics"
+              element={<ProtectedRoute element={<Analytics />} allowedRoles={['agent', 'admin']} />}
             />
             <Route
               path="/properties"

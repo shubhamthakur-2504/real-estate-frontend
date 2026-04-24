@@ -237,7 +237,7 @@ export function Dashboard() {
 
             {/* View Reports Button */}
             <button
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/analytics')}
               className="w-full p-4 flex items-center gap-3 rounded-lg border border-light dark:border-dark hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-400 dark:hover:border-purple-600 transition-all group"
             >
               <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900 group-hover:bg-purple-200 dark:group-hover:bg-purple-800 transition-colors">
